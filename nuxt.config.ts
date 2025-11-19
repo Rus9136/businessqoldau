@@ -90,10 +90,10 @@ export default defineNuxtConfig({
     }
   },
 
-  // Development server configuration
-  devServer: {
+  // Server configuration для Cloud Run
+  server: {
     host: '0.0.0.0',
-    port: 3000
+    port: process.env.PORT || 8080
   },
 
   // Runtime config
