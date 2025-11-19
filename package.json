@@ -10,6 +10,9 @@
     "postinstall": "nuxt prepare",
     "start": "nuxt start"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "@nuxtjs/robots": "^5.5.5",
     "@nuxtjs/sitemap": "^7.4.7",
