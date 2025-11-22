@@ -1,6 +1,7 @@
 import prisma from '../config/database';
 import { AppError } from '../middleware/errorHandler';
 import { ApplicationCategory, ApplicationStatus } from '@prisma/client';
+import { deleteApplicationFiles, countApplicationFiles } from './applicationFileService';
 
 export interface ApplicationInput {
   category: ApplicationCategory;
@@ -118,9 +119,10 @@ export const updateApplication = async (
     throw new AppError('Forbidden', 403);
   }
 
-  // Check if application is still in draft status
-  if (existingApplication.status !== ApplicationStatus.draft) {
-    throw new AppError('Cannot update submitted application', 400);
+  // Check if application is in editable state (draft, revision, withdrawn)
+  const editableStatuses: ApplicationStatus[] = [ApplicationStatus.draft, ApplicationStatus.revision, ApplicationStatus.withdrawn];
+  if (!editableStatuses.includes(existingApplication.status)) {
+    throw new AppError('Cannot update application with current status', 400);
   }
 
   // Update application
@@ -159,8 +161,10 @@ export const submitApplication = async (
   }
 
   // Validate required fields for submission
-  if (!existingApplication.planFilePath) {
-    throw new AppError('Business plan file is required for submission', 400);
+  // Check both old planFilePath and new files table
+  const filesCount = await countApplicationFiles(id);
+  if (!existingApplication.planFilePath && filesCount === 0) {
+    throw new AppError('At least one file is required for submission', 400);
   }
 
   // Update status to submitted
@@ -170,6 +174,34 @@ export const submitApplication = async (
       status: ApplicationStatus.submitted,
     },
   });
+
+  return application;
+};
+
+/**
+ * Get application with files
+ */
+export const getApplicationWithFiles = async (
+  id: string,
+  userId: string
+): Promise<ApplicationResponse & { files: any[] }> => {
+  const application = await prisma.application.findUnique({
+    where: { id },
+    include: {
+      files: {
+        orderBy: { createdAt: 'asc' },
+      },
+    },
+  });
+
+  if (!application) {
+    throw new AppError('Application not found', 404);
+  }
+
+  // Verify ownership
+  if (application.userId !== userId) {
+    throw new AppError('Forbidden', 403);
+  }
 
   return application;
 };
@@ -192,10 +224,14 @@ export const deleteApplication = async (id: string, userId: string): Promise<voi
     throw new AppError('Forbidden', 403);
   }
 
-  // Check if application is still in draft status
-  if (existingApplication.status !== ApplicationStatus.draft) {
-    throw new AppError('Cannot delete submitted application', 400);
+  // Check if application is in editable state (draft, revision, withdrawn)
+  const editableStatuses: ApplicationStatus[] = [ApplicationStatus.draft, ApplicationStatus.revision, ApplicationStatus.withdrawn];
+  if (!editableStatuses.includes(existingApplication.status)) {
+    throw new AppError('Cannot delete application with current status', 400);
   }
+
+  // Delete all associated files first
+  await deleteApplicationFiles(id);
 
   // Delete application
   await prisma.application.delete({
