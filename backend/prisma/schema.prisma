@@ -143,6 +143,10 @@ enum ApplicationCategory {
 enum ApplicationStatus {
   draft
   submitted
+  accepted
+  rejected
+  withdrawn
+  revision
 }
 
 enum UserRole {

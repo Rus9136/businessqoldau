@@ -15,14 +15,15 @@ import {
 
 // Validation schemas
 const getApplicationsSchema = z.object({
-  status: z.enum(['draft', 'submitted']).optional(),
+  status: z.enum(['draft', 'submitted', 'accepted', 'rejected', 'withdrawn', 'revision']).optional(),
   category: z.enum(['starter', 'active', 'it']).optional(),
   page: z.string().regex(/^\d+$/).transform(Number).optional(),
   limit: z.string().regex(/^\d+$/).transform(Number).optional(),
 });
 
 const updateStatusSchema = z.object({
-  status: z.enum(['draft', 'submitted']),
+  status: z.enum(['draft', 'submitted', 'accepted', 'rejected', 'withdrawn', 'revision']),
+  message: z.string().min(10, 'Message must be at least 10 characters').max(1000, 'Message must be at most 1000 characters').optional(),
 });
 
 const getUsersSchema = z.object({
@@ -95,7 +96,11 @@ export const updateApplicationStatusHandler = async (req: Request, res: Response
       });
     }
 
-    const application = await updateApplicationStatus(id, validation.data.status);
+    const application = await updateApplicationStatus(
+      id,
+      validation.data.status,
+      validation.data.message
+    );
 
     return res.status(200).json({
       success: true,

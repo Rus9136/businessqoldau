@@ -24,7 +24,7 @@ router.get('/applications', authenticate, adminAuth, adminController.getApplicat
 /**
  * PUT /api/admin/applications/:id/status
  * Update application status
- * Body: { status: 'draft' | 'submitted' }
+ * Body: { status: 'draft' | 'submitted' | 'accepted' | 'rejected' | 'withdrawn' | 'revision' }
  */
 router.put('/applications/:id/status', authenticate, adminAuth, adminController.updateApplicationStatusHandler);
 
