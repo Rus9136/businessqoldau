@@ -52,6 +52,24 @@
           >
             {{ $t('nav.contacts') }}
           </NuxtLink>
+          <NuxtLink
+            to="/about"
+            class="px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200"
+          >
+            {{ $t('nav.about') }}
+          </NuxtLink>
+          <NuxtLink
+            to="/commission"
+            class="px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200"
+          >
+            {{ $t('nav.commission') }}
+          </NuxtLink>
+          <NuxtLink
+            to="/reviews"
+            class="px-4 py-2 rounded-lg font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200"
+          >
+            {{ $t('nav.reviews') }}
+          </NuxtLink>
         </div>
 
         <!-- Auth & Language -->
@@ -158,6 +176,27 @@
             class="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
           >
             FAQ
+          </NuxtLink>
+          <NuxtLink
+            to="/about"
+            @click="mobileMenuOpen = false"
+            class="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+          >
+            {{ $t('nav.about') }}
+          </NuxtLink>
+          <NuxtLink
+            to="/commission"
+            @click="mobileMenuOpen = false"
+            class="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+          >
+            {{ $t('nav.commission') }}
+          </NuxtLink>
+          <NuxtLink
+            to="/reviews"
+            @click="mobileMenuOpen = false"
+            class="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+          >
+            {{ $t('nav.reviews') }}
           </NuxtLink>
           <NuxtLink
             to="/contacts"
